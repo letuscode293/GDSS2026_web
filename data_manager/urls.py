@@ -1,8 +1,10 @@
 from django.urls import path
 
 from . import views
+from .health import HealthView
 
 urlpatterns = [
+    path("health/", HealthView.as_view(), name="health"),
     path("", views.HomeView.as_view(), name="home"),
     path("crop/", views.CropListView.as_view(), name="crop_list"),
     path("crop/add/", views.CropCreateView.as_view(), name="crop_add"),
