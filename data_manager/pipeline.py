@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_full_pipeline() -> tuple[bool, str]:
-    """Export DB → retrain (local or GitHub Actions) → reload API."""
+    """Export DB → retrain via GitHub Actions or local ml_pipeline."""
     if not settings.AUTO_PIPELINE and not settings.GITHUB_RETRAIN:
         return True, "Automation disabled."
 
@@ -22,15 +22,24 @@ def run_full_pipeline() -> tuple[bool, str]:
     if settings.GITHUB_RETRAIN:
         return trigger_retrain_workflow()
 
-    train_script = Path(settings.PROJECT_ROOT) / "scripts" / "train_tabular.py"
+    ml_root = Path(settings.ML_PIPELINE_ROOT)
+    train_script = ml_root / "scripts" / "train_tabular.py"
     if not train_script.exists():
-        return True, "Data exported. Training skipped (standalone deploy)."
+        return True, "Data exported. ml_pipeline not found — training skipped."
+
+    # Sync exported CSVs into ml_pipeline/datasets for training
+    for name in ("Crop_recommendation.csv", "Fertilizer_Prediction.csv"):
+        src = settings.DATASETS_DIR / name
+        dst = ml_root / "datasets" / name
+        if src.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
 
     result = subprocess.run(
         [sys.executable, str(train_script)],
         capture_output=True,
         text=True,
-        cwd=settings.PROJECT_ROOT,
+        cwd=ml_root,
     )
     if result.returncode != 0:
         detail = result.stderr.strip() or result.stdout.strip() or "Training failed."

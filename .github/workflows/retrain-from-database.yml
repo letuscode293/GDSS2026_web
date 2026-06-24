@@ -5,7 +5,6 @@ on:
   repository_dispatch:
     types: [data-changed]
   schedule:
-    # Daily at 06:00 UTC — optional automatic retrain
     - cron: "0 6 * * *"
 
 jobs:
@@ -14,23 +13,32 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout web app
+      - name: Checkout data entry app
         uses: actions/checkout@v4
         with:
-          path: web
+          path: data_entry
           token: ${{ secrets.GH_PAT }}
 
-      - name: Checkout ML tutorial repo
+      - name: Checkout ML pipeline repo
         uses: actions/checkout@v4
         with:
           repository: letuscode293/tutorial
           ref: richard
-          path: tutorial
+          path: repo
           token: ${{ secrets.GH_PAT }}
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Resolve ML pipeline directory
+        id: paths
+        run: |
+          if [ -d repo/ml_pipeline/scripts ]; then
+            echo "ml=repo/ml_pipeline" >> "$GITHUB_OUTPUT"
+          else
+            echo "ml=repo" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Export data from Render PostgreSQL
         env:
@@ -38,36 +46,37 @@ jobs:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DEBUG: "false"
         run: |
-          cd web
+          cd data_entry
           pip install -r requirements.txt
           python manage.py migrate --noinput
           python manage.py export_datasets
-          cp datasets/Crop_recommendation.csv ../tutorial/datasets/
-          cp datasets/Fertilizer_Prediction.csv ../tutorial/datasets/
+          cp datasets/Crop_recommendation.csv ../${{ steps.paths.outputs.ml }}/datasets/
+          cp datasets/Fertilizer_Prediction.csv ../${{ steps.paths.outputs.ml }}/datasets/
 
       - name: Train models
         run: |
-          cd tutorial
+          cd ${{ steps.paths.outputs.ml }}
           pip install -r requirements.txt
           python scripts/train_tabular.py
           pytest tests/ -v
 
-      - name: Commit updated datasets and models (tutorial)
+      - name: Commit datasets and models (ml_pipeline)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          cd tutorial
+          cd repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add datasets/*.csv models/*.pkl
+          git add ml_pipeline/datasets ml_pipeline/models datasets models 2>/dev/null || true
+          git add datasets/*.csv models/*.pkl 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Auto-retrain: export DB, update models [skip ci]"
           git push origin HEAD:richard
 
-      - name: Commit updated seed datasets (web)
+      - name: Commit seed datasets (data_entry)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          cd web
+          cd data_entry
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add datasets/*.csv

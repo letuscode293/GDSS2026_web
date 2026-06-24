@@ -137,15 +137,14 @@ STORAGES = {
     },
 }
 
-PROJECT_ROOT = Path(os.environ.get("PROJECT_ROOT", BASE_DIR.parent))
 DATASETS_DIR = Path(os.environ.get("DATASETS_DIR", BASE_DIR / "datasets"))
+ML_PIPELINE_ROOT = Path(os.environ.get("ML_PIPELINE_ROOT", BASE_DIR.parent / "ml_pipeline"))
 DATASETS_DIR.mkdir(parents=True, exist_ok=True)
 
-AUTO_PIPELINE = os.environ.get("AUTO_PIPELINE", "false" if os.environ.get("RENDER") else "true").lower() in (
-    "1",
-    "true",
-    "yes",
-)
+AUTO_PIPELINE = os.environ.get(
+    "AUTO_PIPELINE",
+    "false" if os.environ.get("RENDER") else "true",
+).lower() in ("1", "true", "yes")
 GITHUB_RETRAIN = os.environ.get("GITHUB_RETRAIN", "false").lower() in ("1", "true", "yes")
 API_RELOAD_URL = os.environ.get(
     "API_RELOAD_URL",

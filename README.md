@@ -1,69 +1,33 @@
-# GDSS2026_web
+# GDSS2026 Data Entry
 
-Django data manager for GDSS2026 — add training data, import CSVs, and trigger model retraining via GitHub Actions.
+Django web app for adding and importing crop and fertilizer training data.
 
-## GitHub Actions retrain pipeline
+**This is part 1 of GDSS2026.** Model training and deployment live in `ml_pipeline/` (separate repo).
 
-Workflow: `.github/workflows/retrain-from-database.yml`
+## What this app does
 
-**What it does:**
-1. Connects to your Render PostgreSQL (`DATABASE_URL` secret)
-2. Exports all records to CSV
-3. Checks out the [tutorial](https://github.com/letuscode293/tutorial) repo
-4. Runs `train_tabular.py` and tests
-5. Commits updated `models/*.pkl` and `datasets/*.csv` to GitHub
+- Add crop and fertilizer records via forms
+- Bulk CSV upload
+- Export data to CSV
+- Trigger model retraining via **GitHub Actions** (`GITHUB_RETRAIN=true`)
 
-**Triggers:**
-| When | How |
-|------|-----|
-| Manual | GitHub → Actions → **Retrain from database** → Run workflow |
-| Daily | Scheduled at 06:00 UTC |
-| On data change | Set `GITHUB_RETRAIN=true` on Render (see below) |
+## Does NOT do (by design)
 
-### Required GitHub secrets
-
-In **GDSS2026_web** repo → Settings → Secrets → Actions:
-
-| Secret | Value |
-|--------|--------|
-| `DATABASE_URL` | Render **External** PostgreSQL URL |
-| `DJANGO_SECRET_KEY` | Same as Render web service |
-| `GH_PAT` | GitHub PAT with `repo` + `workflow` scope (both repos) |
-
-Create PAT: GitHub → Settings → Developer settings → Personal access tokens.
-
-### Auto-trigger from Render on data change
-
-Add to Render **Environment**:
-
-```env
-GITHUB_RETRAIN=true
-GITHUB_TOKEN=ghp_your_pat_here
-GITHUB_REPOSITORY=letuscode293/GDSS2026_web
-```
-
-When users add/import data, the app starts the GitHub Actions retrain workflow.
-
----
+- Train models locally on Render
+- Serve predictions (that's `ml_pipeline/api/`)
 
 ## Deploy on Render
 
-| Setting | Value |
-|---------|--------|
-| **Build command** | `./build.sh` |
-| **Start command** | `./start.sh` |
+See `render.yaml`. Environment:
 
 ```env
 DATABASE_URL=postgresql://...
-DJANGO_SECRET_KEY=your-secret
+DJANGO_SECRET_KEY=...
 DEBUG=false
-AUTO_PIPELINE=false
 GITHUB_RETRAIN=true
 GITHUB_TOKEN=ghp_...
-PYTHON_VERSION=3.11.9
+GITHUB_REPOSITORY=letuscode293/GDSS2026_web
 ```
-
----
 
 ## Local development
 
@@ -74,10 +38,21 @@ python manage.py load_datasets
 python manage.py runserver 8001
 ```
 
-## Monorepo (local full pipeline)
+## GitHub Actions
 
-With `AUTO_PIPELINE=true` in the full project:
+`retrain-from-database.yml` exports this app's database → trains models in `ml_pipeline` repo → commits updated `.pkl` files.
 
-1. Export to `datasets/*.csv`
-2. Run `scripts/train_tabular.py`
-3. Reload FastAPI via `POST /reload-models`
+Secrets: `GH_PAT`, `DATABASE_URL`, `DJANGO_SECRET_KEY`
+
+## Local full pipeline (with sibling ml_pipeline/)
+
+```bash
+export AUTO_PIPELINE=true
+# add data in browser → exports CSV, trains ml_pipeline, reloads API
+```
+
+Or from monorepo root:
+
+```bash
+cd ../ml_pipeline && python scripts/automate_pipeline.py
+```
