@@ -1,0 +1,21 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Upload CSV | GDSS2026{% endblock %}
+
+{% block content %}
+<h1>Upload CSV</h1>
+<p>Import rows from a CSV file. Column names should match the training datasets (extra spaces are OK).</p>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Import</button>
+  <a href="{% url 'home' %}" role="button" class="secondary">Back</a>
+</form>
+
+<section>
+  <h2>Expected columns</h2>
+  <p><strong>Crop:</strong> N, P, K, temperature, humidity, ph, rainfall, label</p>
+  <p><strong>Fertilizer:</strong> Temparature, Humidity, Moisture, Soil Type, Crop Type, Nitrogen, Potassium, Phosphorous, Fertilizer Name</p>
+</section>
+{% endblock %}

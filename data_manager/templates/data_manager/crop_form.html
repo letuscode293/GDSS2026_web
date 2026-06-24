@@ -1,0 +1,15 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Add crop record | GDSS2026{% endblock %}
+
+{% block content %}
+<h1>Add crop record</h1>
+<p>Fields match <code>Crop_recommendation.csv</code>: N, P, K, temperature, humidity, pH, rainfall, and crop label.</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+  <a href="{% url 'crop_list' %}" role="button" class="secondary">Cancel</a>
+</form>
+{% endblock %}

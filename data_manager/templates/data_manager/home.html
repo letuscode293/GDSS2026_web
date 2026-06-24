@@ -1,0 +1,52 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Home | GDSS2026 Data Manager{% endblock %}
+
+{% block content %}
+<section>
+  <h1>GDSS2026 Data Manager</h1>
+  <p>Add training data manually or import it from CSV files for crop and fertilizer recommendation models.</p>
+</section>
+
+<div class="grid">
+  <article>
+    <header>Crop recommendation</header>
+    <p><strong>{{ crop_count }}</strong> records in database</p>
+    <div class="actions">
+      <a href="{% url 'crop_add' %}" role="button">Add record</a>
+      <a href="{% url 'crop_list' %}" role="button" class="secondary">View all</a>
+      <a href="{% url 'export_crop' %}" role="button" class="outline">Download CSV</a>
+    </div>
+  </article>
+
+  <article>
+    <header>Fertilizer prediction</header>
+    <p><strong>{{ fertilizer_count }}</strong> records in database</p>
+    <div class="actions">
+      <a href="{% url 'fertilizer_add' %}" role="button">Add record</a>
+      <a href="{% url 'fertilizer_list' %}" role="button" class="secondary">View all</a>
+      <a href="{% url 'export_fertilizer' %}" role="button" class="outline">Download CSV</a>
+    </div>
+  </article>
+</div>
+
+<section>
+  <h2>Bulk import</h2>
+  <p>Upload a CSV file with the same columns as the training datasets.</p>
+  <a href="{% url 'upload_csv' %}" role="button">Upload CSV</a>
+</section>
+
+<section>
+  <h2>Automated pipeline</h2>
+  <p>When you add or import data, GDSS2026 automatically:</p>
+  <ol>
+    <li>Exports records to <code>datasets/</code></li>
+    <li>Retrains models with <code>scripts/train_tabular.py</code></li>
+    <li>Reloads the FastAPI models (if the API is running)</li>
+  </ol>
+  <form method="post" action="{% url 'sync_datasets' %}">
+    {% csrf_token %}
+    <button type="submit">Run pipeline now</button>
+  </form>
+</section>
+{% endblock %}

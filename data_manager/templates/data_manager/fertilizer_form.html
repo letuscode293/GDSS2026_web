@@ -1,0 +1,15 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Add fertilizer record | GDSS2026{% endblock %}
+
+{% block content %}
+<h1>Add fertilizer record</h1>
+<p>Fields match <code>Fertilizer_Prediction.csv</code>.</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+  <a href="{% url 'fertilizer_list' %}" role="button" class="secondary">Cancel</a>
+</form>
+{% endblock %}

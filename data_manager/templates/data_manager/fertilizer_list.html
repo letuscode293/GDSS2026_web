@@ -1,0 +1,49 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Fertilizer data | GDSS2026{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <h1>Fertilizer prediction data</h1>
+  <a href="{% url 'fertilizer_add' %}" role="button">Add record</a>
+</header>
+
+<p>Showing up to 200 most recent records ({{ total }} total).</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Temp</th>
+        <th>Humidity</th>
+        <th>Moisture</th>
+        <th>Soil</th>
+        <th>Crop</th>
+        <th>N</th>
+        <th>K</th>
+        <th>P</th>
+        <th>Fertilizer</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in records %}
+      <tr>
+        <td>{{ record.temperature }}</td>
+        <td>{{ record.humidity }}</td>
+        <td>{{ record.moisture }}</td>
+        <td>{{ record.soil_type }}</td>
+        <td>{{ record.crop_type }}</td>
+        <td>{{ record.nitrogen }}</td>
+        <td>{{ record.potassium }}</td>
+        <td>{{ record.phosphorous }}</td>
+        <td>{{ record.fertilizer_name }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9">No records yet. <a href="{% url 'fertilizer_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
