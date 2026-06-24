@@ -3,6 +3,9 @@ services:
     name: gdss2026-web
     runtime: python
     plan: free
+    repo: https://github.com/letuscode293/GDSS2026_web
+    branch: richard
+    autoDeploy: true
     buildCommand: "./build.sh"
     startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
@@ -16,6 +19,8 @@ services:
         value: "false"
       - key: WEB_CONCURRENCY
         value: 2
+      # If you created the DB manually (e.g. "GDSS"), set DATABASE_URL in the
+      # Render dashboard instead of using fromDatabase below.
       - key: DATABASE_URL
         fromDatabase:
           name: gdss2026-db

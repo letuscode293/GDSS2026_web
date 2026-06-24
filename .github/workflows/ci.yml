@@ -1,0 +1,29 @@
+name: GDSS2026 Web CI
+
+on:
+  push:
+    branches: [richard, main, master]
+  pull_request:
+    branches: [richard, main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Django checks
+        env:
+          DJANGO_SECRET_KEY: ci-test-secret-key
+          DEBUG: "false"
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+          python manage.py load_datasets

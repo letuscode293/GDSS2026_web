@@ -18,6 +18,26 @@ Django data manager for GDSS2026 — add training data, import CSVs, and export 
 
 Your app will be live at `https://gdss2026-web.onrender.com` (or similar).
 
+### Auto-deploy (push → live)
+
+Auto-deploy is configured in `render.yaml` (`autoDeploy: true`, branch `richard`).
+
+**Every `git push` to `richard` triggers:**
+
+1. GitHub Actions CI (tests + migrate)
+2. Render rebuild (`build.sh` → migrate → load data → start gunicorn)
+
+**Verify in Render dashboard:**
+
+1. Open your **web service** → **Settings**
+2. **Build & Deploy** → confirm:
+   - **Branch:** `richard`
+   - **Auto-Deploy:** **On**
+3. **Build command:** `./build.sh`
+4. **Start command:** `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+
+If you created the database manually (e.g. **GDSS**), set `DATABASE_URL` under **Environment** using the **Internal Database URL**.
+
 ### Manual deploy (alternative)
 
 Create a **Web Service** on Render:
