@@ -19,6 +19,9 @@ def run_full_pipeline() -> tuple[bool, str]:
     write_exports_to_datasets()
 
     train_script = Path(settings.PROJECT_ROOT) / "scripts" / "train_tabular.py"
+    if not train_script.exists():
+        return True, "Data exported. Training skipped (standalone deploy)."
+
     result = subprocess.run(
         [sys.executable, str(train_script)],
         capture_output=True,
