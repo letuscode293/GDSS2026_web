@@ -1,16 +1,45 @@
 from pathlib import Path
 import os
+from urllib.parse import urlparse, urlunparse
 
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _normalize_render_database_url(url: str) -> str:
+    """Prefer external URL; upgrade internal Render hostnames when needed."""
+    external = os.environ.get("DATABASE_EXTERNAL_URL")
+    if external:
+        return external
+    if not url or "sqlite" in url:
+        return url
+
+    parsed = urlparse(url)
+    host = parsed.hostname
+    if host and host.startswith("dpg-") and "." not in host:
+        region = os.environ.get("RENDER_DB_REGION", "oregon")
+        new_host = f"{host}.{region}-postgres.render.com"
+        auth = ""
+        if parsed.username:
+            auth = parsed.username
+            if parsed.password:
+                auth = f"{auth}:{parsed.password}"
+            auth = f"{auth}@"
+        port = f":{parsed.port}" if parsed.port else ""
+        new_netloc = f"{auth}{new_host}{port}"
+        return urlunparse(parsed._replace(netloc=new_netloc))
+    return url
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "django-insecure-dev-only-change-in-production",
 )
 
-DEBUG = os.environ.get("DEBUG", "true").lower() in ("1", "true", "yes")
+DEBUG = os.environ.get(
+    "DEBUG",
+    "false" if os.environ.get("RENDER") else "true",
+).lower() in ("1", "true", "yes")
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -70,13 +99,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = _normalize_render_database_url(os.environ.get("DATABASE_URL", ""))
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=not DATABASE_URL.startswith("sqlite"),
+            ssl_require=True,
         )
     }
 else:
