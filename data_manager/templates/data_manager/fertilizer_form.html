@@ -3,13 +3,23 @@
 {% block title %}Add fertilizer record | GDSS2026{% endblock %}
 
 {% block content %}
-<h1>Add fertilizer record</h1>
-<p>Fields match <code>Fertilizer_Prediction.csv</code>.</p>
+<header class="page-header">
+  <div>
+    <h1>Add fertilizer record</h1>
+    <p>Fields match <code>Fertilizer_Prediction.csv</code></p>
+  </div>
+</header>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-  <a href="{% url 'fertilizer_list' %}" role="button" class="secondary">Cancel</a>
-</form>
+<div class="form-card">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      {{ form.as_p }}
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save record</button>
+      <a href="{% url 'fertilizer_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
 {% endblock %}

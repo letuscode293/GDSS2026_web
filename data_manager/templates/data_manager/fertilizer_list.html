@@ -4,46 +4,51 @@
 
 {% block content %}
 <header class="page-header">
-  <h1>Fertilizer prediction data</h1>
-  <a href="{% url 'fertilizer_add' %}" role="button">Add record</a>
+  <div>
+    <h1>Fertilizer prediction</h1>
+    <p>{{ total }} total records · showing latest 200</p>
+  </div>
+  <a href="{% url 'fertilizer_add' %}" class="btn btn-primary">+ Add record</a>
 </header>
 
-<p>Showing up to 200 most recent records ({{ total }} total).</p>
-
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>Temp</th>
-        <th>Humidity</th>
-        <th>Moisture</th>
-        <th>Soil</th>
-        <th>Crop</th>
-        <th>N</th>
-        <th>K</th>
-        <th>P</th>
-        <th>Fertilizer</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in records %}
-      <tr>
-        <td>{{ record.temperature }}</td>
-        <td>{{ record.humidity }}</td>
-        <td>{{ record.moisture }}</td>
-        <td>{{ record.soil_type }}</td>
-        <td>{{ record.crop_type }}</td>
-        <td>{{ record.nitrogen }}</td>
-        <td>{{ record.potassium }}</td>
-        <td>{{ record.phosphorous }}</td>
-        <td>{{ record.fertilizer_name }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="9">No records yet. <a href="{% url 'fertilizer_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Temp</th>
+          <th>Humidity</th>
+          <th>Moisture</th>
+          <th>Soil</th>
+          <th>Crop</th>
+          <th>N</th>
+          <th>K</th>
+          <th>P</th>
+          <th>Fertilizer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.temperature|floatformat:0 }}</td>
+          <td>{{ record.humidity|floatformat:0 }}</td>
+          <td>{{ record.moisture|floatformat:0 }}</td>
+          <td>{{ record.soil_type }}</td>
+          <td>{{ record.crop_type }}</td>
+          <td>{{ record.nitrogen|floatformat:0 }}</td>
+          <td>{{ record.potassium|floatformat:0 }}</td>
+          <td>{{ record.phosphorous|floatformat:0 }}</td>
+          <td><span class="badge">{{ record.fertilizer_name }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="empty-state">
+            No records yet. <a href="{% url 'fertilizer_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

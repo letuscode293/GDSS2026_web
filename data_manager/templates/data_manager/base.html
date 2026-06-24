@@ -1,34 +1,52 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}GDSS2026 Data Manager{% endblock %}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body>
-  <header class="container">
-    <nav>
-      <ul>
-        <li><strong><a href="{% url 'home' %}">GDSS2026 Data</a></strong></li>
-      </ul>
-      <ul>
-        <li><a href="{% url 'crop_list' %}">Crop data</a></li>
-        <li><a href="{% url 'fertilizer_list' %}">Fertilizer data</a></li>
-        <li><a href="{% url 'upload_csv' %}">Upload CSV</a></li>
-      </ul>
-    </nav>
-  </header>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="{% url 'home' %}" class="brand">
+          <span class="brand-icon" aria-hidden="true">🌾</span>
+          <span class="brand-text">
+            <strong>GDSS2026</strong>
+            <small>Data Manager</small>
+          </span>
+        </a>
+        <nav class="main-nav" aria-label="Main">
+          <a href="{% url 'home' %}" class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}">Dashboard</a>
+          <a href="{% url 'crop_list' %}" class="nav-link{% if 'crop' in request.resolver_match.url_name %} active{% endif %}">Crop</a>
+          <a href="{% url 'fertilizer_list' %}" class="nav-link{% if 'fertilizer' in request.resolver_match.url_name %} active{% endif %}">Fertilizer</a>
+          <a href="{% url 'upload_csv' %}" class="nav-link{% if request.resolver_match.url_name == 'upload_csv' %} active{% endif %}">Upload</a>
+        </nav>
+      </div>
+    </header>
 
-  <main class="container">
-    {% if messages %}
-      {% for message in messages %}
-        <article class="message {{ message.tags }}">{{ message }}</article>
-      {% endfor %}
-    {% endif %}
+    <main class="container main-content">
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
 
-    {% block content %}{% endblock %}
-  </main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>GDSS2026 · Crop &amp; fertilizer training data for ML models</p>
+      </div>
+    </footer>
+  </div>
 </body>
 </html>

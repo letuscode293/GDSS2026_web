@@ -3,19 +3,27 @@
 {% block title %}Upload CSV | GDSS2026{% endblock %}
 
 {% block content %}
-<h1>Upload CSV</h1>
-<p>Import rows from a CSV file. Column names should match the training datasets (extra spaces are OK).</p>
+<header class="page-header">
+  <div>
+    <h1>Upload CSV</h1>
+    <p>Import rows from a CSV file into the database</p>
+  </div>
+</header>
 
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Import</button>
-  <a href="{% url 'home' %}" role="button" class="secondary">Back</a>
-</form>
+<div class="form-card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Import data</button>
+      <a href="{% url 'home' %}" class="btn btn-secondary">Back to dashboard</a>
+    </div>
+  </form>
+</div>
 
-<section>
+<section class="panel" style="margin-top: 1.25rem;">
   <h2>Expected columns</h2>
   <p><strong>Crop:</strong> N, P, K, temperature, humidity, ph, rainfall, label</p>
-  <p><strong>Fertilizer:</strong> Temparature, Humidity, Moisture, Soil Type, Crop Type, Nitrogen, Potassium, Phosphorous, Fertilizer Name</p>
+  <p style="margin-bottom: 0;"><strong>Fertilizer:</strong> Temparature, Humidity, Moisture, Soil Type, Crop Type, Nitrogen, Potassium, Phosphorous, Fertilizer Name</p>
 </section>
 {% endblock %}

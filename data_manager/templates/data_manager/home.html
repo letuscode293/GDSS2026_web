@@ -1,52 +1,64 @@
 {% extends "data_manager/base.html" %}
 
-{% block title %}Home | GDSS2026 Data Manager{% endblock %}
+{% block title %}Dashboard | GDSS2026{% endblock %}
 
 {% block content %}
-<section>
-  <h1>GDSS2026 Data Manager</h1>
-  <p>Add training data manually or import it from CSV files for crop and fertilizer recommendation models.</p>
+<section class="hero">
+  <h1>Training data dashboard</h1>
+  <p>Manage crop and fertilizer datasets for GDSS2026 machine learning models — add records, import CSVs, and export data.</p>
 </section>
 
-<div class="grid">
-  <article>
-    <header>Crop recommendation</header>
-    <p><strong>{{ crop_count }}</strong> records in database</p>
-    <div class="actions">
-      <a href="{% url 'crop_add' %}" role="button">Add record</a>
-      <a href="{% url 'crop_list' %}" role="button" class="secondary">View all</a>
-      <a href="{% url 'export_crop' %}" role="button" class="outline">Download CSV</a>
+<div class="card-grid">
+  <article class="card card-crop">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Crop recommendation</div>
+        <div class="stat">{{ crop_count }}</div>
+        <div class="stat-label">records in database</div>
+      </div>
+      <span class="card-icon" aria-hidden="true">🌱</span>
+    </div>
+    <div class="card-actions">
+      <a href="{% url 'crop_add' %}" class="btn btn-primary">Add record</a>
+      <a href="{% url 'crop_list' %}" class="btn btn-secondary">View all</a>
+      <a href="{% url 'export_crop' %}" class="btn btn-outline">Export CSV</a>
     </div>
   </article>
 
-  <article>
-    <header>Fertilizer prediction</header>
-    <p><strong>{{ fertilizer_count }}</strong> records in database</p>
-    <div class="actions">
-      <a href="{% url 'fertilizer_add' %}" role="button">Add record</a>
-      <a href="{% url 'fertilizer_list' %}" role="button" class="secondary">View all</a>
-      <a href="{% url 'export_fertilizer' %}" role="button" class="outline">Download CSV</a>
+  <article class="card card-fert">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Fertilizer prediction</div>
+        <div class="stat">{{ fertilizer_count }}</div>
+        <div class="stat-label">records in database</div>
+      </div>
+      <span class="card-icon" aria-hidden="true">🧪</span>
+    </div>
+    <div class="card-actions">
+      <a href="{% url 'fertilizer_add' %}" class="btn btn-primary">Add record</a>
+      <a href="{% url 'fertilizer_list' %}" class="btn btn-secondary">View all</a>
+      <a href="{% url 'export_fertilizer' %}" class="btn btn-outline">Export CSV</a>
     </div>
   </article>
 </div>
 
-<section>
+<section class="panel">
   <h2>Bulk import</h2>
-  <p>Upload a CSV file with the same columns as the training datasets.</p>
-  <a href="{% url 'upload_csv' %}" role="button">Upload CSV</a>
+  <p>Upload a CSV with the same columns as your training datasets.</p>
+  <a href="{% url 'upload_csv' %}" class="btn btn-primary">Upload CSV file</a>
 </section>
 
-<section>
+<section class="panel panel-muted">
   <h2>Automated pipeline</h2>
-  <p>When you add or import data, GDSS2026 automatically:</p>
-  <ol>
-    <li>Exports records to <code>datasets/</code></li>
-    <li>Retrains models with <code>scripts/train_tabular.py</code></li>
-    <li>Reloads the FastAPI models (if the API is running)</li>
+  <p>When you add or import data, GDSS2026 can automatically:</p>
+  <ol class="pipeline-steps">
+    <li>Export records to <code>datasets/</code></li>
+    <li>Retrain models with <code>train_tabular.py</code></li>
+    <li>Reload the FastAPI prediction service</li>
   </ol>
   <form method="post" action="{% url 'sync_datasets' %}">
     {% csrf_token %}
-    <button type="submit">Run pipeline now</button>
+    <button type="submit" class="btn btn-primary">Run pipeline now</button>
   </form>
 </section>
 {% endblock %}

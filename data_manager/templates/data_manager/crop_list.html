@@ -4,44 +4,49 @@
 
 {% block content %}
 <header class="page-header">
-  <h1>Crop recommendation data</h1>
-  <a href="{% url 'crop_add' %}" role="button">Add record</a>
+  <div>
+    <h1>Crop recommendation</h1>
+    <p>{{ total }} total records · showing latest 200</p>
+  </div>
+  <a href="{% url 'crop_add' %}" class="btn btn-primary">+ Add record</a>
 </header>
 
-<p>Showing up to 200 most recent records ({{ total }} total).</p>
-
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>N</th>
-        <th>P</th>
-        <th>K</th>
-        <th>Temp</th>
-        <th>Humidity</th>
-        <th>pH</th>
-        <th>Rainfall</th>
-        <th>Label</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in records %}
-      <tr>
-        <td>{{ record.n }}</td>
-        <td>{{ record.p }}</td>
-        <td>{{ record.k }}</td>
-        <td>{{ record.temperature }}</td>
-        <td>{{ record.humidity }}</td>
-        <td>{{ record.ph }}</td>
-        <td>{{ record.rainfall }}</td>
-        <td>{{ record.label }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="8">No records yet. <a href="{% url 'crop_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>N</th>
+          <th>P</th>
+          <th>K</th>
+          <th>Temp °C</th>
+          <th>Humidity</th>
+          <th>pH</th>
+          <th>Rainfall</th>
+          <th>Crop</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.n|floatformat:0 }}</td>
+          <td>{{ record.p|floatformat:0 }}</td>
+          <td>{{ record.k|floatformat:0 }}</td>
+          <td>{{ record.temperature|floatformat:1 }}</td>
+          <td>{{ record.humidity|floatformat:1 }}</td>
+          <td>{{ record.ph|floatformat:1 }}</td>
+          <td>{{ record.rainfall|floatformat:1 }}</td>
+          <td><span class="badge">{{ record.label }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="empty-state">
+            No records yet. <a href="{% url 'crop_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
