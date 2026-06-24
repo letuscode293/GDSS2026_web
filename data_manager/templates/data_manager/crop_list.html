@@ -3,27 +3,20 @@
 {% block title %}Crop data | GDSS2026{% endblock %}
 
 {% block content %}
-<header class="page-header">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
   <div>
-    <h1>Crop recommendation</h1>
-    <p>{{ total }} total records · showing latest 200</p>
+    <h1 class="page-title">Crop data</h1>
+    <p class="page-sub">{{ total }} records total · showing latest 200</p>
   </div>
-  <a href="{% url 'crop_add' %}" class="btn btn-primary">+ Add record</a>
-</header>
+  <a href="{% url 'crop_add' %}" class="btn btn-brand"><i class="bi bi-plus-lg me-1"></i>Add record</a>
+</div>
 
-<div class="table-card">
-  <div class="table-wrap">
-    <table>
+<div class="card table-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
       <thead>
         <tr>
-          <th>N</th>
-          <th>P</th>
-          <th>K</th>
-          <th>Temp °C</th>
-          <th>Humidity</th>
-          <th>pH</th>
-          <th>Rainfall</th>
-          <th>Crop</th>
+          <th>N</th><th>P</th><th>K</th><th>Temp</th><th>Humidity</th><th>pH</th><th>Rainfall</th><th>Crop</th>
         </tr>
       </thead>
       <tbody>
@@ -36,12 +29,12 @@
           <td>{{ record.humidity|floatformat:1 }}</td>
           <td>{{ record.ph|floatformat:1 }}</td>
           <td>{{ record.rainfall|floatformat:1 }}</td>
-          <td><span class="badge">{{ record.label }}</span></td>
+          <td><span class="badge text-bg-success">{{ record.label }}</span></td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="8" class="empty-state">
-            No records yet. <a href="{% url 'crop_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload a CSV</a>.
+          <td colspan="8" class="text-center text-muted py-5">
+            No records yet. <a href="{% url 'crop_add' %}">Add one</a> or <a href="{% url 'upload_csv' %}">upload CSV</a>.
           </td>
         </tr>
         {% endfor %}

@@ -3,62 +3,78 @@
 {% block title %}Dashboard | GDSS2026{% endblock %}
 
 {% block content %}
-<section class="hero">
-  <h1>Training data dashboard</h1>
-  <p>Manage crop and fertilizer datasets for GDSS2026 machine learning models — add records, import CSVs, and export data.</p>
-</section>
-
-<div class="card-grid">
-  <article class="card card-crop">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Crop recommendation</div>
-        <div class="stat">{{ crop_count }}</div>
-        <div class="stat-label">records in database</div>
-      </div>
-      <span class="card-icon" aria-hidden="true">🌱</span>
-    </div>
-    <div class="card-actions">
-      <a href="{% url 'crop_add' %}" class="btn btn-primary">Add record</a>
-      <a href="{% url 'crop_list' %}" class="btn btn-secondary">View all</a>
-      <a href="{% url 'export_crop' %}" class="btn btn-outline">Export CSV</a>
-    </div>
-  </article>
-
-  <article class="card card-fert">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Fertilizer prediction</div>
-        <div class="stat">{{ fertilizer_count }}</div>
-        <div class="stat-label">records in database</div>
-      </div>
-      <span class="card-icon" aria-hidden="true">🧪</span>
-    </div>
-    <div class="card-actions">
-      <a href="{% url 'fertilizer_add' %}" class="btn btn-primary">Add record</a>
-      <a href="{% url 'fertilizer_list' %}" class="btn btn-secondary">View all</a>
-      <a href="{% url 'export_fertilizer' %}" class="btn btn-outline">Export CSV</a>
-    </div>
-  </article>
+<div class="mb-4">
+  <h1 class="page-title">Dashboard</h1>
+  <p class="page-sub">Manage training data for crop and fertilizer ML models</p>
 </div>
 
-<section class="panel">
-  <h2>Bulk import</h2>
-  <p>Upload a CSV with the same columns as your training datasets.</p>
-  <a href="{% url 'upload_csv' %}" class="btn btn-primary">Upload CSV file</a>
-</section>
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1 text-uppercase fw-semibold">Crop recommendation</p>
+            <p class="display-6 mb-0">{{ crop_count }}</p>
+            <p class="text-muted small mb-0">records</p>
+          </div>
+          <span class="text-success fs-4"><i class="bi bi-flower1"></i></span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <a href="{% url 'crop_add' %}" class="btn btn-brand btn-sm">Add record</a>
+          <a href="{% url 'crop_list' %}" class="btn btn-outline-secondary btn-sm">View all</a>
+          <a href="{% url 'export_crop' %}" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1 text-uppercase fw-semibold">Fertilizer prediction</p>
+            <p class="display-6 mb-0">{{ fertilizer_count }}</p>
+            <p class="text-muted small mb-0">records</p>
+          </div>
+          <span class="text-primary fs-4"><i class="bi bi-droplet"></i></span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <a href="{% url 'fertilizer_add' %}" class="btn btn-brand btn-sm">Add record</a>
+          <a href="{% url 'fertilizer_list' %}" class="btn btn-outline-secondary btn-sm">View all</a>
+          <a href="{% url 'export_fertilizer' %}" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<section class="panel panel-muted">
-  <h2>Automated pipeline</h2>
-  <p>When you add or import data, GDSS2026 can automatically:</p>
-  <ol class="pipeline-steps">
-    <li>Export records to <code>datasets/</code></li>
-    <li>Retrain models with <code>train_tabular.py</code></li>
-    <li>Reload the FastAPI prediction service</li>
-  </ol>
-  <form method="post" action="{% url 'sync_datasets' %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary">Run pipeline now</button>
-  </form>
-</section>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5 fw-semibold mb-2">Import data</h2>
+        <p class="text-muted small mb-3">Upload a CSV file with the same columns as your training datasets.</p>
+        <a href="{% url 'upload_csv' %}" class="btn btn-brand">Upload CSV</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5 fw-semibold mb-2">Run pipeline</h2>
+        <p class="text-muted small mb-2">Export data, retrain models, and reload the API.</p>
+        <ol class="small text-muted mb-3 ps-3">
+          <li>Export to datasets/</li>
+          <li>Retrain models</li>
+          <li>Reload FastAPI</li>
+        </ol>
+        <form method="post" action="{% url 'sync_datasets' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-dark btn-sm">Run now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

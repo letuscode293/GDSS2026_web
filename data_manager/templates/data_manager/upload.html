@@ -3,27 +3,43 @@
 {% block title %}Upload CSV | GDSS2026{% endblock %}
 
 {% block content %}
-<header class="page-header">
-  <div>
-    <h1>Upload CSV</h1>
-    <p>Import rows from a CSV file into the database</p>
-  </div>
-</header>
-
-<div class="form-card">
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Import data</button>
-      <a href="{% url 'home' %}" class="btn btn-secondary">Back to dashboard</a>
-    </div>
-  </form>
+<div class="mb-4">
+  <h1 class="page-title">Upload CSV</h1>
+  <p class="page-sub">Bulk import crop or fertilizer training data</p>
 </div>
 
-<section class="panel" style="margin-top: 1.25rem;">
-  <h2>Expected columns</h2>
-  <p><strong>Crop:</strong> N, P, K, temperature, humidity, ph, rainfall, label</p>
-  <p style="margin-bottom: 0;"><strong>Fertilizer:</strong> Temparature, Humidity, Moisture, Soil Type, Crop Type, Nitrogen, Potassium, Phosphorous, Fertilizer Name</p>
-</section>
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label fw-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <div class="d-flex gap-2 pt-2">
+            <button type="submit" class="btn btn-brand">Import</button>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-semibold mb-3">Expected columns</h2>
+        <p class="small text-muted mb-2"><strong>Crop</strong></p>
+        <p class="small mb-3"><code>N, P, K, temperature, humidity, ph, rainfall, label</code></p>
+        <p class="small text-muted mb-2"><strong>Fertilizer</strong></p>
+        <p class="small mb-0"><code>Temparature, Humidity, Moisture, Soil Type, Crop Type, Nitrogen, Potassium, Phosphorous, Fertilizer Name</code></p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
