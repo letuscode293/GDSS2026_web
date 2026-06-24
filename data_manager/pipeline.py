@@ -6,17 +6,21 @@ from pathlib import Path
 import requests
 from django.conf import settings
 
+from .github_dispatch import trigger_retrain_workflow
 from .services import write_exports_to_datasets
 
 logger = logging.getLogger(__name__)
 
 
 def run_full_pipeline() -> tuple[bool, str]:
-    """Export DB → retrain models → reload API. Used after data changes."""
-    if not settings.AUTO_PIPELINE:
+    """Export DB → retrain (local or GitHub Actions) → reload API."""
+    if not settings.AUTO_PIPELINE and not settings.GITHUB_RETRAIN:
         return True, "Automation disabled."
 
     write_exports_to_datasets()
+
+    if settings.GITHUB_RETRAIN:
+        return trigger_retrain_workflow()
 
     train_script = Path(settings.PROJECT_ROOT) / "scripts" / "train_tabular.py"
     if not train_script.exists():

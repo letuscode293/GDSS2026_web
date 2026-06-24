@@ -62,16 +62,16 @@
   <div class="col-lg-6">
     <div class="card h-100">
       <div class="card-body">
-        <h2 class="h5 fw-semibold mb-2">Run pipeline</h2>
-        <p class="text-muted small mb-2">Export data, retrain models, and reload the API.</p>
+        <h2 class="h5 fw-semibold mb-2">Automated retrain (GitHub Actions)</h2>
+        <p class="text-muted small mb-2">Export database → train models → push updated models to GitHub.</p>
         <ol class="small text-muted mb-3 ps-3">
-          <li>Export to datasets/</li>
-          <li>Retrain models</li>
-          <li>Reload FastAPI</li>
+          <li>Export PostgreSQL to CSV</li>
+          <li>Run <code>train_tabular.py</code> in CI</li>
+          <li>Commit new <code>models/*.pkl</code></li>
         </ol>
         <form method="post" action="{% url 'sync_datasets' %}">
           {% csrf_token %}
-          <button type="submit" class="btn btn-outline-dark btn-sm">Run now</button>
+          <button type="submit" class="btn btn-outline-dark btn-sm">Trigger retrain</button>
         </form>
       </div>
     </div>

@@ -1,72 +1,67 @@
 # GDSS2026_web
 
-Django data manager for GDSS2026 — add training data, import CSVs, and export CSV files.
+Django data manager for GDSS2026 — add training data, import CSVs, and trigger model retraining via GitHub Actions.
 
-## Deploy on Render (recommended)
+## GitHub Actions retrain pipeline
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/letuscode293/GDSS2026_web)
+Workflow: `.github/workflows/retrain-from-database.yml`
 
-### One-click deploy
+**What it does:**
+1. Connects to your Render PostgreSQL (`DATABASE_URL` secret)
+2. Exports all records to CSV
+3. Checks out the [tutorial](https://github.com/letuscode293/tutorial) repo
+4. Runs `train_tabular.py` and tests
+5. Commits updated `models/*.pkl` and `datasets/*.csv` to GitHub
 
-1. Push this repo to GitHub (`richard` branch).
-2. Go to [Render Dashboard](https://dashboard.render.com/) → **New** → **Blueprint**.
-3. Connect `https://github.com/letuscode293/GDSS2026_web`.
-4. Render reads `render.yaml` and creates:
-   - **Web service** — Django app
-   - **PostgreSQL** — persistent database
-5. Click **Apply** and wait for the build (~3–5 min).
+**Triggers:**
+| When | How |
+|------|-----|
+| Manual | GitHub → Actions → **Retrain from database** → Run workflow |
+| Daily | Scheduled at 06:00 UTC |
+| On data change | Set `GITHUB_RETRAIN=true` on Render (see below) |
 
-Your app will be live at `https://gdss2026-web.onrender.com` (or similar).
+### Required GitHub secrets
 
-### Auto-deploy (push → live)
+In **GDSS2026_web** repo → Settings → Secrets → Actions:
 
-Auto-deploy is configured in `render.yaml` (`autoDeploy: true`, branch `richard`).
+| Secret | Value |
+|--------|--------|
+| `DATABASE_URL` | Render **External** PostgreSQL URL |
+| `DJANGO_SECRET_KEY` | Same as Render web service |
+| `GH_PAT` | GitHub PAT with `repo` + `workflow` scope (both repos) |
 
-**Every `git push` to `richard` triggers:**
+Create PAT: GitHub → Settings → Developer settings → Personal access tokens.
 
-1. GitHub Actions CI (tests + migrate)
-2. Render rebuild (`build.sh` → migrate → load data → start gunicorn)
+### Auto-trigger from Render on data change
 
-**Verify in Render dashboard:**
+Add to Render **Environment**:
 
-1. Open your **web service** → **Settings**
-2. **Build & Deploy** → confirm:
-   - **Branch:** `richard`
-   - **Auto-Deploy:** **On**
-3. **Build command:** `./build.sh`
-4. **Start command:** `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+```env
+GITHUB_RETRAIN=true
+GITHUB_TOKEN=ghp_your_pat_here
+GITHUB_REPOSITORY=letuscode293/GDSS2026_web
+```
 
-If you created the database manually (e.g. **GDSS**), set `DATABASE_URL` under **Environment** using the **Internal Database URL**.
+When users add/import data, the app starts the GitHub Actions retrain workflow.
 
-### Manual deploy (alternative)
+---
 
-Create a **Web Service** on Render:
+## Deploy on Render
 
 | Setting | Value |
 |---------|--------|
-| **Root directory** | *(leave blank — repo root)* |
 | **Build command** | `./build.sh` |
-| **Start command** | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT` |
-| **Python version** | `3.11.9` |
+| **Start command** | `./start.sh` |
 
-**Environment variables:**
-
-| Key | Value |
-|-----|--------|
-| `DJANGO_SECRET_KEY` | Generate a random secret |
-| `DEBUG` | `false` |
-| `AUTO_PIPELINE` | `false` |
-| `DATABASE_URL` | From a Render PostgreSQL instance |
-
-Attach a **PostgreSQL** database and link `DATABASE_URL` to the web service.
-
-### After deploy
-
-- Open your Render URL and use the data manager.
-- Upload CSVs or add records manually.
-- Download exports from the home page.
-
-> **Note:** Full auto-retrain (export → train → API reload) only works in the full monorepo with FastAPI running. On Render, `AUTO_PIPELINE=false` by default.
+```env
+DATABASE_URL=postgresql://...
+DJANGO_SECRET_KEY=your-secret
+DEBUG=false
+AUTO_PIPELINE=false
+GITHUB_RETRAIN=true
+GITHUB_TOKEN=ghp_...
+PYTHON_VERSION=3.11.9
+```
 
 ---
 
@@ -79,11 +74,9 @@ python manage.py load_datasets
 python manage.py runserver 8001
 ```
 
-Open http://127.0.0.1:8001/
+## Monorepo (local full pipeline)
 
-## Monorepo automation (optional)
-
-When running inside the full GDSS2026 project with `AUTO_PIPELINE=true`:
+With `AUTO_PIPELINE=true` in the full project:
 
 1. Export to `datasets/*.csv`
 2. Run `scripts/train_tabular.py`

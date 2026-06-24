@@ -146,6 +146,7 @@ AUTO_PIPELINE = os.environ.get("AUTO_PIPELINE", "false" if os.environ.get("RENDE
     "true",
     "yes",
 )
+GITHUB_RETRAIN = os.environ.get("GITHUB_RETRAIN", "false").lower() in ("1", "true", "yes")
 API_RELOAD_URL = os.environ.get(
     "API_RELOAD_URL",
     "http://127.0.0.1:8000/reload-models",
