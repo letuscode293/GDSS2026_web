@@ -14,4 +14,6 @@ urlpatterns = [
     path("export/crop/", views.ExportCropView.as_view(), name="export_crop"),
     path("export/fertilizer/", views.ExportFertilizerView.as_view(), name="export_fertilizer"),
     path("sync-datasets/", views.SyncDatasetsView.as_view(), name="sync_datasets"),
+    path("recommend/crop/", views.CropPredictView.as_view(), name="predict_crop"),
+    path("recommend/fertilizer/", views.FertilizerPredictView.as_view(), name="predict_fertilizer"),
 ]

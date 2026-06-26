@@ -1,0 +1,52 @@
+{% extends "data_manager/base.html" %}
+
+{% block title %}Crop recommendation | GDSS2026{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h1 class="page-title">Crop recommendation</h1>
+  <p class="page-sub">Enter soil and climate details to get a crop suggestion from the ML model.</p>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="row g-3">
+            {% for field in form %}
+              <div class="col-md-6">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-brand mt-4">Recommend crop</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5 fw-semibold mb-3">Result</h2>
+        {% if result %}
+          <div class="alert alert-success mb-0">
+            <p class="mb-1 fw-semibold">Recommended crop</p>
+            <p class="display-6 text-capitalize mb-1">{{ result.label }}</p>
+            <p class="mb-0 small text-muted">{{ result.confidence_pct|floatformat:1 }}% confidence</p>
+          </div>
+        {% else %}
+          <p class="text-muted mb-2">Fill in the form and click <strong>Recommend crop</strong>.</p>
+          <p class="small text-muted mb-0">
+            Model status:
+            crop {% if models_ready.crop %}<span class="text-success">ready</span>{% else %}<span class="text-danger">missing</span>{% endif %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

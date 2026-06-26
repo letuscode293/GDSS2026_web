@@ -102,6 +102,14 @@
         <a href="{% url 'home' %}">GDSS2026<small>Data Manager</small></a>
       </div>
       <nav class="nav flex-column py-2">
+        <div class="px-3 py-1 small text-uppercase text-secondary">Recommendations</div>
+        <a class="nav-link{% if request.resolver_match.url_name == 'predict_crop' %} active{% endif %}" href="{% url 'predict_crop' %}">
+          <i class="bi bi-lightbulb"></i> Crop recommendation
+        </a>
+        <a class="nav-link{% if request.resolver_match.url_name == 'predict_fertilizer' %} active{% endif %}" href="{% url 'predict_fertilizer' %}">
+          <i class="bi bi-moisture"></i> Fertilizer recommendation
+        </a>
+        <div class="px-3 py-1 mt-2 small text-uppercase text-secondary">Training data</div>
         <a class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}" href="{% url 'home' %}">
           <i class="bi bi-grid-1x2"></i> Dashboard
         </a>

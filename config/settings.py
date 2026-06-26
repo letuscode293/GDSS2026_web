@@ -139,6 +139,10 @@ STORAGES = {
 
 DATASETS_DIR = Path(os.environ.get("DATASETS_DIR", BASE_DIR / "datasets"))
 ML_PIPELINE_ROOT = Path(os.environ.get("ML_PIPELINE_ROOT", BASE_DIR.parent / "ml_pipeline"))
+_default_models = BASE_DIR / "models"
+if not _default_models.exists() and (ML_PIPELINE_ROOT / "models").exists():
+    _default_models = ML_PIPELINE_ROOT / "models"
+MODELS_DIR = Path(os.environ.get("MODELS_DIR", _default_models))
 DATASETS_DIR.mkdir(parents=True, exist_ok=True)
 
 AUTO_PIPELINE = os.environ.get(

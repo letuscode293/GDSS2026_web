@@ -5,7 +5,33 @@
 {% block content %}
 <div class="mb-4">
   <h1 class="page-title">Dashboard</h1>
-  <p class="page-sub">Manage training data for crop and fertilizer ML models</p>
+  <p class="page-sub">Get ML recommendations or manage training data</p>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card stat-card h-100 border-success border-2">
+      <div class="card-body">
+        <p class="text-muted small mb-1 text-uppercase fw-semibold">For users</p>
+        <h2 class="h5 fw-semibold">Get a recommendation</h2>
+        <p class="text-muted small mb-3">Submit soil and climate details — the model suggests a crop or fertilizer.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'predict_crop' %}" class="btn btn-brand btn-sm">Crop recommendation</a>
+          <a href="{% url 'predict_fertilizer' %}" class="btn btn-outline-success btn-sm">Fertilizer recommendation</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <p class="text-muted small mb-1 text-uppercase fw-semibold">For admins</p>
+        <h2 class="h5 fw-semibold">Training data</h2>
+        <p class="text-muted small mb-3">Add records, upload CSV, and trigger model retraining.</p>
+        <a href="{% url 'upload_csv' %}" class="btn btn-outline-secondary btn-sm">Upload CSV</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="row g-3 mb-4">

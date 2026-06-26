@@ -72,13 +72,15 @@ jobs:
           git diff --staged --quiet || git commit -m "Auto-retrain: export DB, update models [skip ci]"
           git push origin HEAD:richard
 
-      - name: Commit seed datasets (data_entry)
+      - name: Commit seed datasets and models (data_entry)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           cd data_entry
+          mkdir -p models
+          cp ../${{ steps.paths.outputs.ml }}/models/*.pkl models/ 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add datasets/*.csv
-          git diff --staged --quiet || git commit -m "Auto-export datasets from database [skip ci]"
+          git add datasets/*.csv models/*.pkl
+          git diff --staged --quiet || git commit -m "Auto-export datasets and models from database [skip ci]"
           git push origin HEAD:richard

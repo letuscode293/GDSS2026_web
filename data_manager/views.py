@@ -4,7 +4,14 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 
-from .forms import CSVUploadForm, CropRecordForm, FertilizerRecordForm
+from .forms import (
+    CSVUploadForm,
+    CropPredictForm,
+    CropRecordForm,
+    FertilizerPredictForm,
+    FertilizerRecordForm,
+)
+from .inference import models_ready, predict_crop, predict_fertilizer
 from .models import CropRecord, FertilizerRecord
 from .pipeline import run_full_pipeline
 from .services import (
@@ -143,3 +150,65 @@ class SyncDatasetsView(View):
     def post(self, request):
         _trigger_pipeline(request)
         return redirect(reverse("home"))
+
+
+class CropPredictView(View):
+    def get(self, request):
+        return render(
+            request,
+            "data_manager/predict_crop.html",
+            {
+                "form": CropPredictForm(),
+                "models_ready": models_ready(),
+            },
+        )
+
+    def post(self, request):
+        form = CropPredictForm(request.POST)
+        result = None
+        if form.is_valid():
+            try:
+                crop, confidence = predict_crop(form.cleaned_data)
+                result = {"label": crop, "confidence_pct": confidence * 100}
+            except Exception as exc:
+                messages.error(request, f"Prediction failed: {exc}")
+        return render(
+            request,
+            "data_manager/predict_crop.html",
+            {
+                "form": form,
+                "result": result,
+                "models_ready": models_ready(),
+            },
+        )
+
+
+class FertilizerPredictView(View):
+    def get(self, request):
+        return render(
+            request,
+            "data_manager/predict_fertilizer.html",
+            {
+                "form": FertilizerPredictForm(),
+                "models_ready": models_ready(),
+            },
+        )
+
+    def post(self, request):
+        form = FertilizerPredictForm(request.POST)
+        result = None
+        if form.is_valid():
+            try:
+                fertilizer, confidence = predict_fertilizer(form.cleaned_data)
+                result = {"label": fertilizer, "confidence_pct": confidence * 100}
+            except Exception as exc:
+                messages.error(request, f"Prediction failed: {exc}")
+        return render(
+            request,
+            "data_manager/predict_fertilizer.html",
+            {
+                "form": form,
+                "result": result,
+                "models_ready": models_ready(),
+            },
+        )

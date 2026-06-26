@@ -6,8 +6,8 @@ services:
     repo: https://github.com/letuscode293/GDSS2026_web
     branch: richard
     autoDeploy: true
-    buildCommand: "./build.sh"
-    startCommand: "./start.sh"
+    buildCommand: bash build.sh
+    startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
@@ -17,6 +17,15 @@ services:
         value: "false"
       - key: AUTO_PIPELINE
         value: "false"
+      - key: GITHUB_RETRAIN
+        value: "true"
+      - key: GITHUB_REPOSITORY
+        value: letuscode293/GDSS2026_web
+      - key: GITHUB_REF
+        value: richard
+      # Set after deploying gdss2026-api (tutorial repo blueprint):
+      # API_RELOAD_URL=https://gdss2026-api.onrender.com/reload-models
+      # GITHUB_TOKEN=ghp_... (your PAT with workflow + repo scope)
       - key: WEB_CONCURRENCY
         value: 2
       # If you created the DB manually (e.g. "GDSS"), set DATABASE_URL in the
